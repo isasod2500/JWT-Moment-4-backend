@@ -11,7 +11,7 @@ mongoose.connect(process.env.DATABASE).then(() => {
     console.error(`error: ${err}`)
 });
 
-const User = require("../models/User")
+const User = require("../models/user.js")
 
 app.get("/api", async (req, res) => {
     res.json({ message: "API NÅDD" });
