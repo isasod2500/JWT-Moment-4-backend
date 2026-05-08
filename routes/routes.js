@@ -41,10 +41,10 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, firstname, surname, email, age } = req.body;
 
-        if (!username || !password) {
-            return res.status(400).json({ error: `Invalid input, send username and password` })
+        if (!username || !password || !email || !age) {
+            return res.status(400).json({ error: `Invalid input: Username, password, email and age has to be provided.` })
         }
 
 
