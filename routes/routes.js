@@ -13,6 +13,10 @@ mongoose.connect(process.env.DATABASE).then(() => {
 
 const User = require("../models/User")
 
+app.get("/api", async (req, res) => {
+    res.json({ message: "API NÅDD" });
+});
+
 router.post("/register", async (req, res) => {
     try {
         const { username, password } = req.body;
