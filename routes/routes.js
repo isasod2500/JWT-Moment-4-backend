@@ -13,7 +13,7 @@ mongoose.connect(process.env.DATABASE).then(() => {
 
 const User = require("../models/user.js")
 
-router.get("/api", async (req, res) => {
+router.get("/", async (req, res) => {
     res.json({ message: "API NÅDD" });
 });
 
