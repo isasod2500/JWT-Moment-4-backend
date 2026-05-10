@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router();
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken")
+
 require("dotenv").config();
 
 mongoose.set("strictQuery", false);
@@ -10,6 +11,8 @@ mongoose.connect(process.env.DATABASE).then(() => {
 }).catch((err) => {
     console.error(`error: ${err}`)
 });
+
+
 
 const User = require("../models/user.js")
 
@@ -55,12 +58,12 @@ router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if (!username || !password || !email || !age) {
-            return res.status(400).json({ error: `Invalid input: Username, password, email and age has to be provided.` })
+        if (!username || !password) {
+            return res.status(400).json({ error: `Invalid input: Username, password has to be provided.` })
         }
 
 
-        const user = await User.findOne({ username });
+        let user = await User.findOne({ username });
         if (!user) {
             return res.status(401).json({ error: "Incorrect username or password" })
         }
@@ -74,7 +77,7 @@ router.post("/login", async (req, res) => {
         const payload = { username: username };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "1h" })
 
-        user = await User.findOne({ username: username }, {password:0});
+        user = await User.findOne({ username: username });
         const response = {
             user,
             token
