@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
     res.json({ message: "API NÅDD" });
 });
 
-app.get("/api/users", async (req, res) => {
+router.get("/api/users", async (req, res) => {
     try {
         let result = await User.find({});
         console.log(result)
