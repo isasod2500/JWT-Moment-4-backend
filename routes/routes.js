@@ -13,6 +13,18 @@ mongoose.connect(process.env.DATABASE).then(() => {
 
 const User = require("../models/User")
 
+app.get("/api/users", async (req, res) => {
+    try {
+        let result = await User.find({});
+        console.log(result)
+        return res.json(result)
+    } catch (err) {
+        console.error(err)
+        return res.status(500).json({
+            message: err.message})
+    }
+})
+
 router.post("/register", async (req, res) => {
     try {
         const { username, password } = req.body;
