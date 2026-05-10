@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
             return res.status(400).json({ error: `Invalid input, send username and password` })
         }
 
-        const user = new User({ username, password })
+        const user = new User({ username, password, firstname, surname, email, age  })
         await user.save();
 
         res.status(201).json({ message: `User created` })
