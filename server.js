@@ -9,6 +9,10 @@ app.use(bodyParser.json());
 
 const port = process.env.PORT || 3000;
 
+app.get("/", async (req, res) => {
+    res.json({ message: "API NÅDD" });
+});
+
 app.get("/api/admin", authenticateToken, (req, res) => {
     
     res.json({ message: `Admin route, protected` })

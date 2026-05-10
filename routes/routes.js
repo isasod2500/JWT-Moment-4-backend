@@ -11,7 +11,11 @@ mongoose.connect(process.env.DATABASE).then(() => {
     console.error(`error: ${err}`)
 });
 
-const User = require("../models/User")
+const User = require("../models/user.js")
+
+router.get("/", async (req, res) => {
+    res.json({ message: "API NÅDD" });
+});
 
 app.get("/api/users", async (req, res) => {
     try {
@@ -27,14 +31,14 @@ app.get("/api/users", async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const {  username, password, firstname, surname, email, birthdate } = req.body;
         console.log(req.body)
 
         if (!username || !password) {
             return res.status(400).json({ error: `Invalid input, send username and password` })
         }
 
-        const user = new User({ username, password })
+        const user = new User({ username, password, firstname, surname, email, birthdate  })
         await user.save();
 
         res.status(201).json({ message: `User created` })
@@ -51,8 +55,8 @@ router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if (!username || !password) {
-            return res.status(400).json({ error: `Invalid input, send username and password` })
+        if (!username || !password || !email || !age) {
+            return res.status(400).json({ error: `Invalid input: Username, password, email and age has to be provided.` })
         }
 
 
