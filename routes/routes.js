@@ -28,20 +28,21 @@ router.get("/users", async (req, res) => {
     } catch (err) {
         console.error(err)
         return res.status(500).json({
-            message: err.message})
+            message: err.message
+        })
     }
 })
 
 router.post("/register", async (req, res) => {
     try {
-        const {  username, password, firstname, surname, email, birthdate } = req.body;
+        const { username, password, firstname, surname, email, birthdate } = req.body;
         console.log(req.body)
 
         if (!username || !password) {
             return res.status(400).json({ error: `Invalid input, send username and password` })
         }
 
-        const user = new User({ username, password, firstname, surname, email, birthdate  })
+        const user = new User({ username, password, firstname, surname, email, birthdate })
         await user.save();
 
         res.status(201).json({ message: `User created` })
@@ -63,7 +64,13 @@ router.post("/login", async (req, res) => {
         }
 
 
-        let user = await User.findOne({ username });
+        let user = await User.findOne({
+            $or: [
+                { username: username },
+                { email: username }
+            ]
+        }).select("+password");
+        
         if (!user) {
             return res.status(401).json({ error: "Incorrect username or password" })
         }
@@ -87,7 +94,7 @@ router.post("/login", async (req, res) => {
     } catch (err) {
         res.status(401).json({
             error: err.message
-            });
+        });
     }
 });
 

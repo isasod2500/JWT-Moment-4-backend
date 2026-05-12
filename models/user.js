@@ -54,7 +54,9 @@ userSchema.statics.register = async function (username, password) {
     try {
         const user = new this({
             username,
-            password
+            password,
+            email,
+            birthdate
         });
         await user.save();
         return user;
@@ -70,7 +72,7 @@ userSchema.methods.comparePassword = async function (password) {
         return await bcrypt.compare(password, this.password)
 
     } catch (err) {
-        console.error(err)
+        throw err
     }
 }
 
