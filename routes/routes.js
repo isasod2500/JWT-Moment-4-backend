@@ -56,6 +56,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+    console.log(`Login route successful`)
     try {
         const { username, password } = req.body;
 
@@ -63,14 +64,15 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ error: `Invalid input: Username and password has to be provided.` })
         }
 
-
+        console.log(`Username and password accepted`)
         let user = await User.findOne({
             $or: [
                 { username: username },
                 { email: username }
             ]
         }).select("+password");
-        
+
+        console.log(`User with provided username and email found`)
         if (!user) {
             return res.status(401).json({ error: "Incorrect username or password" })
         }
@@ -79,11 +81,12 @@ router.post("/login", async (req, res) => {
         if (!matchingPassword) {
             return res.status(401).json({ error: "Incorrect username or password" })
         }
-
+        console.log(`Found matching password`)
         //Create webtoken
         const payload = { username: username };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "1h" })
 
+        console.log(`Token created`)
         user = await User.findOne({ username: username });
         const response = {
             user,
