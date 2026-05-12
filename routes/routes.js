@@ -59,7 +59,7 @@ router.post("/login", async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
-            return res.status(400).json({ error: `Invalid input: Username, password has to be provided.` })
+            return res.status(400).json({ error: `Invalid input: Username and password has to be provided.` })
         }
 
 
@@ -85,7 +85,9 @@ router.post("/login", async (req, res) => {
         res.status(200).json({ response });
 
     } catch (err) {
-        res.status(500).json({ error: `${err}` })
+        res.status(401).json({
+            error: err.message
+            });
     }
 });
 

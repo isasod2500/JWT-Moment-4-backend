@@ -86,16 +86,31 @@ userSchema.statics.login = async function (username, password) {
         }).select("+password");
         //Om användare inte hittas, skicka fel
         if (!user) {
+        //Inloggning med e-post ska också fungera, här kallar jag explicit lösenordet
+        //då per standard tas det inte med
+        const user = await this.findOne({
+            $or: [
+                { username: username },
+                { email: username }
+            ]
+        }).select("+password");
+        //Om användare inte hittas, skicka fel
+        if (!user) {
             throw new Error(`Incorrect username or password`)
         }
 
         //Funktion compare med inkommande lösenord
         console.log(user)
+        //Funktion compare med inkommande lösenord
+        console.log(user)
         const matchingPassword = await user.comparePassword(password);
+        //Om false, neka.
+        if (!matchingPassword) {
         //Om false, neka.
         if (!matchingPassword) {
             throw new Error(`Incorrect username or password`)
         }
+        //Om inte fel, returnera användaren
         //Om inte fel, returnera användaren
         return user;
     } catch (err) {
