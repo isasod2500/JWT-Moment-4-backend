@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-//Hash password
+
 
 userSchema.pre("save", async function () {
     try {
@@ -70,7 +70,7 @@ userSchema.methods.comparePassword = async function (password) {
         return await bcrypt.compare(password, this.password)
 
     } catch (err) {
-        throw err
+        console.error(err)
     }
 }
 
@@ -86,39 +86,26 @@ userSchema.statics.login = async function (username, password) {
         }).select("+password");
         //Om användare inte hittas, skicka fel
         if (!user) {
-            //Inloggning med e-post ska också fungera, här kallar jag explicit lösenordet
-            //då per standard tas det inte med
-            const user = await this.findOne({
-                $or: [
-                    { username: username },
-                    { email: username }
-                ]
-            }).select("+password");
-            //Om användare inte hittas, skicka fel
-            if (!user) {
-                throw new Error(`Incorrect username or password`)
-            }
-
-            //Funktion compare med inkommande lösenord
-            console.log(user)
-
-            const matchingPassword = await user.comparePassword(password);
-            //Om false, neka.
-            if (!matchingPassword) {
-                //Om false, neka.
-                if (!matchingPassword) {
-                    throw new Error(`Incorrect username or password`)
-                }
-                //Om inte fel, returnera användaren
-                //Om inte fel, returnera användaren
-                return user;
-
-            }
+            throw new Error(`Incorrect username or password`)
         }
+
+        //Funktion compare med inkommande lösenord
+        console.log(user.password)
+
+        const matchingPassword = await user.comparePassword(password);
+
+        //Om false, neka.
+        if (!matchingPassword) {
+            throw new Error(`Incorrect username or password`)
+        }
+        //Om inte fel, returnera användaren
+        return user;
+
     } catch (err) {
         throw err
     }
-
-    const User = mongoose.model("User", userSchema)
-    module.exports = User;
 }
+
+
+const User = mongoose.model("User", userSchema)
+module.exports = User;
