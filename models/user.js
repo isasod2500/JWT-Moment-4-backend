@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     firstname: {
         type: String,
@@ -38,7 +39,7 @@ const userSchema = new mongoose.Schema({
 
 //Hash password
 
-userSchema.pre("save", async function() {
+userSchema.pre("save", async function () {
     try {
         if (this.isNew || this.isModified("password")) {
             const hashedPassword = await bcrypt.hash(this.password, 10);
@@ -57,14 +58,16 @@ userSchema.statics.register = async function (username, password) {
         });
         await user.save();
         return user;
-        
-    } catch(err) {
-       throw err
+
+    } catch (err) {
+        throw err
     }
 }
 
-userSchema.methods.comparePassword = async function(password) {
+userSchema.methods.comparePassword = async function (password) {
     try {
+        console.log(password, this.password)
+        //Jämför lösenordet som hashade, inkommande med this, dvs existerande users lösenord
         return await bcrypt.compare(password, this.password)
 
     } catch (err) {
@@ -74,20 +77,29 @@ userSchema.methods.comparePassword = async function(password) {
 
 userSchema.statics.login = async function (username, password) {
     try {
-        const user = await this.findOne ({ username });
-
-        if(!user) {
+        //Inloggning med e-post ska också fungera, här kallar jag explicit lösenordet
+        //då per standard tas det inte med
+        const user = await this.findOne({
+            $or: [
+                { username: username },
+                { email: username }
+            ]
+        }).select("+password");
+        //Om användare inte hittas, skicka fel
+        if (!user) {
             throw new Error(`Incorrect username or password`)
         }
 
+        //Funktion compare med inkommande lösenord
+        console.log(user)
         const matchingPassword = await user.comparePassword(password);
-
-        if(!matchingPassword) {
+        //Om false, neka.
+        if (!matchingPassword) {
             throw new Error(`Incorrect username or password`)
         }
-
+        //Om inte fel, returnera användaren
         return user;
-    } catch(err) {
+    } catch (err) {
         throw err
     }
 }
