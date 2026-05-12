@@ -66,6 +66,7 @@ userSchema.statics.register = async function (username, password) {
 
 userSchema.methods.comparePassword = async function (password) {
     try {
+        console.log(password, this.password)
         //Jämför lösenordet som hashade, inkommande med this, dvs existerande users lösenord
         return await bcrypt.compare(password, this.password)
 
