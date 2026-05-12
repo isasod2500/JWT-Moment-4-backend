@@ -55,8 +55,8 @@ router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if (!username || !password || !email || !age) {
-            return res.status(400).json({ error: `Invalid input: Username, password, email and age has to be provided.` })
+        if (!username || !password) {
+            return res.status(400).json({ error: `Invalid input: Username and password has to be provided.` })
         }
 
 
