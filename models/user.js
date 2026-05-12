@@ -64,7 +64,7 @@ userSchema.statics.register = async function (username, password) {
     }
 }
 
-userSchema.methods.comparePassword = async function (password) {
+userSchema.methods.comparePassword = async function (password, this.password) {
     try {
         console.log(password, this.password)
         //Jämför lösenordet som hashade, inkommande med this, dvs existerande users lösenord
