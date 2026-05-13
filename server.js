@@ -18,7 +18,7 @@ app.get("/", async (req, res) => {
     res.json({ message: "API NÅDD" });
 });
 
-app.get("/api/admin", authenticateToken, (req, res) => {
+app.get("/signedin", authenticateToken, (req, res) => {
 
     res.json({ message: `Admin route, protected` })
 })
