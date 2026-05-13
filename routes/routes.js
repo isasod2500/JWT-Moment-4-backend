@@ -83,7 +83,7 @@ router.post("/login", async (req, res) => {
         }
         console.log(`Found matching password`)
         //Create webtoken
-        const payload = { username: username };
+        const payload = { username: user.username };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: "1h" })
 
         console.log(`Token created`)
@@ -92,7 +92,7 @@ router.post("/login", async (req, res) => {
             user,
             token
         }
-        res.status(200).json({ response });
+        res.status(200).json(response);
 
     } catch (err) {
         res.status(401).json({

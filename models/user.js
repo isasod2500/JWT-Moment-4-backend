@@ -50,7 +50,7 @@ userSchema.pre("save", async function () {
     }
 });
 
-userSchema.statics.register = async function (username, password) {
+userSchema.statics.register = async function (username, password, email, birthdate) {
     try {
         const user = new this({
             username,
@@ -92,8 +92,6 @@ userSchema.statics.login = async function (username, password) {
         }
 
         //Funktion compare med inkommande lösenord
-        console.log(user.password)
-
         const matchingPassword = await user.comparePassword(password);
 
         //Om false, neka.
