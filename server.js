@@ -25,17 +25,13 @@ app.get("/signedin", authenticateToken, (req, res) => {
 
 app.get("/secret", authenticateToken, async (req, res) => {
     try {
-        const { username, token } = req.body
+        const user = await User.findOne({ username: req.user.username})
 
-        if (!username || !token) {
-            return res.status(403).json({ error: `Access denied. Token or username missing.` })
+        if (!user) {
+            return res.status(403).json({ error: `Access denied. Username not found.` })
         }
 
-        const decrypt = jwt.verify(token, JWT_SECRET_KEY);
-
-        const user = await User.findById(decrypt.id)
-
-        const response = res.json({
+        res.json({
             username: user.username,
             firstname: user.firstname,
             surname: user.surname,
@@ -43,9 +39,9 @@ app.get("/secret", authenticateToken, async (req, res) => {
             created: user.created
         })
 
-        console.log(response)
+
     } catch (err) {
-        res.status(401).json({
+        res.status(500).json({
             error: err.message
         });
     }
@@ -58,9 +54,9 @@ function authenticateToken(req, res, next) {
     if (token == null) {
         return res.status(401).json({ message: "Not authorised" })
     }
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, username) => {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decrypted) => {
         if (err) return res.status(403).json({ message: `${err}` })
-        req.username = username
+        req.user = decrypted
         next();
     })
 }
