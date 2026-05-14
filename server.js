@@ -23,29 +23,7 @@ app.get("/signedin", authenticateToken, (req, res) => {
     res.json({ message: `Admin route, protected` })
 })
 
-app.get("/secret", authenticateToken, async (req, res) => {
-    try {
-        const user = await User.findOne({ username: req.user.username})
 
-        if (!user) {
-            return res.status(403).json({ error: `Access denied. Username not found.` })
-        }
-
-        res.json({
-            username: user.username,
-            firstname: user.firstname,
-            surname: user.surname,
-            email: user.email,
-            created: user.created
-        })
-
-
-    } catch (err) {
-        res.status(500).json({
-            error: err.message
-        });
-    }
-})
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"]

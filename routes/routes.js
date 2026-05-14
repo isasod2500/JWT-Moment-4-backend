@@ -101,4 +101,42 @@ router.post("/login", async (req, res) => {
     }
 });
 
+router.get("/secret", authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.user.username})
+
+        if (!user) {
+            return res.status(403).json({ error: `Access denied. Username not found.` })
+        }
+
+        res.json({
+            username: user.username,
+            firstname: user.firstname,
+            surname: user.surname,
+            email: user.email,
+            created: user.created
+        })
+
+
+    } catch (err) {
+        res.status(500).json({
+            error: err.message
+        });
+    }
+})
+
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers["authorization"]
+    const token = authHeader && authHeader.split(" ")[1]
+
+    if (token == null) {
+        return res.status(401).json({ message: "Not authorised" })
+    }
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decrypted) => {
+        if (err) return res.status(403).json({ message: `${err}` })
+        req.user = decrypted
+        next();
+    })
+}
+
 module.exports = router;
