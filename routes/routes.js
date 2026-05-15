@@ -13,26 +13,16 @@ mongoose.connect(process.env.DATABASE).then(() => {
 });
 
 
-
+//Importera mallen user
 const User = require("../models/user.js")
 
+//Skappa index sidan, mest för att bekräfta att den faktiskt fungerar.
 router.get("/", async (req, res) => {
     res.json({ message: "API NÅDD" });
 });
 
-router.get("/users", async (req, res) => {
-    try {
-        let result = await User.find({});
-        console.log(result)
-        return res.json(result)
-    } catch (err) {
-        console.error(err)
-        return res.status(500).json({
-            message: err.message
-        })
-    }
-})
-
+//Route för registrera. 
+//If-satser för att kolla efter upptagna användaruppgifter, nekar eller godkänner beroende på status. Sparar i MongoDB
 router.post("/register", async (req, res) => {
     try {
         const { username, password, firstname, surname, email, birthdate } = req.body;
@@ -55,6 +45,9 @@ router.post("/register", async (req, res) => {
     }
 });
 
+/*Route för login. POSTar username och password, jämför i fall allt stämmer och genererar sedan token i fall det stämmer.
+Reroutar sedan till signedin om allt uppfylls.
+Tillåter även inloggning med lösenord.*/
 router.post("/login", async (req, res) => {
    
     try {
@@ -101,6 +94,7 @@ router.post("/login", async (req, res) => {
     }
 });
 
+//Hemlig sida som endast går att nå med giltig JWT token.
 router.get("/secret", authenticateToken, async (req, res) => {
     try {
         const user = await User.findOne({ username: req.user.username})
@@ -109,6 +103,7 @@ router.get("/secret", authenticateToken, async (req, res) => {
             return res.status(403).json({ error: `Access denied. Username not found.` })
         }
 
+        //Skicka till frontend för att printa ut uppgifter.
         res.json({
             username: user.username,
             firstname: user.firstname,
@@ -125,6 +120,7 @@ router.get("/secret", authenticateToken, async (req, res) => {
     }
 })
 
+//Funktion som autentiserar token. I fall token saknas eller JWT SECRET KEY saknas så returneras error.
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"]
     const token = authHeader && authHeader.split(" ")[1]

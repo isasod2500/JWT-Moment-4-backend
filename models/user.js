@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
+//Modell för user
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -39,6 +40,7 @@ const userSchema = new mongoose.Schema({
 
 
 
+//Innan save körs, kolla i fall lösenordet är nytt eller om det är modifierat. Om ja, hasha.
 userSchema.pre("save", async function () {
     try {
         if (this.isNew || this.isModified("password")) {
@@ -50,6 +52,7 @@ userSchema.pre("save", async function () {
     }
 });
 
+//Skapa användare 
 userSchema.statics.register = async function (username, password, email, birthdate) {
     try {
         const user = new this({
@@ -106,6 +109,6 @@ userSchema.statics.login = async function (username, password) {
     }
 }
 
-
+//Exportera User för användning i routes.
 const User = mongoose.model("User", userSchema)
 module.exports = User;
